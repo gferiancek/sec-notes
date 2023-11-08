@@ -1,0 +1,66 @@
+/* Part 1 */
+
+1. Make a directory called first.
+    mkdir first
+
+2. Change directory to the first folder.
+    cd first
+
+3. Create a file called person.txt.
+    touch person.txt
+
+4. change the name of person.txt to another.txt.
+    mv person.txt another.txt
+
+5. Make a copy of another.txt and call it copy.txt.
+    cp another.txt copy.txt
+
+6. Remove the copy.txt file.
+    rm copy.txt
+
+7. Make a copy of the first folder and call it second.
+    cp -r first second
+
+8. Delete the second folder.
+    rm -rf second (Alternatively, rmdir if the directory is empty)
+
+
+/* Part 2 */
+
+1. What does the man command do? Type man rm. How do you scroll and get out?
+    man stands for manual and brings up info about the command, such as applicable flags. You can scroll down with Enter, or use the up/down arrow keys. You exit with the q key.
+
+2. Look at the man page for ls. What does the -l flag do? The -a flag?
+    The -l flag shows more detailied info about the file. (Read/write permissions, modification time, etc.) and the -a flag indicates you want to see ALL files. (Includes .files which are usually hidden.)
+
+3. How do you jump between words in the Terminal?
+    ctrl + left/right arrow key. (On Windows. Alt works as well)
+
+4. How do you get to the end of a line in Terminal?
+    ctrl + e
+
+5. How do you move your cursor to the beginning in Terminal?
+    ctrl + a
+
+6. How do you delete a word in Terminal? (Without pressing backspace a ton)
+    ctrl + w
+
+7. What is the difference between a terminal and shell?
+    A terminal is a program that handles text input/output. It doesn't process any commands, but it allows us to type them and displays the results.
+
+    A shell is the actual software that executes the commands you input into Terminal. Throughout the course, we're using bash. A terminal isn't locked to a specific shell either, and you can freely swap in a new shell, such as zsh, powershell, etc.
+
+8. What is an Absolute Path?
+    An absolute path refers to the FULL path to the file/directory. i.e. /home/user/dir-name/file-name. While these are longer, they have the benefit being possible to run from any location.
+
+9. What is a Relative Path?
+    A relative path is the path relative to your current directory. These commands are shorter, but their scope is limited. i.e. if you are in /home/user/first you cannot access anything inside of /home/user/second with relative commands.
+
+10. What is a flag? Give three examples of flags you have used.
+    A flag is an optional part of a command that will change or enhance it. ("-" followed by a upper/lowercase letter.) Some example flags:
+    ls -a: Indicates that you want to see all files for your ls command.
+    ls -l: Indicates that you want to see detailed file information.
+    cp -r: r stands for recursive, which allows you to copy the directory and all of its subtree.
+
+11. What do the r and f flags do with the rm command?
+    rm -rf is used to delete a directory that isn't empty. (rmdir only works on empty directories!) Note that this forces deletion and if you accidentally delete an important folder, everything inside of it is gone!

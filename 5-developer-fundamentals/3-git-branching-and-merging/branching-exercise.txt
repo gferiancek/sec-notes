@@ -1,0 +1,28 @@
+/* Part 1 */
+
+1. What git command creates a branch?
+    git branch branch_name
+    git checkout -b branch_name // can create and checkout branch in one command.
+
+2. What is the difference between a fast-forward and recursive merge?
+    Assuming branch B is being merged into A:
+
+    A fast-forward merge would occur when all of the commits in B occur after the commits in A. The commits in Bcan be "stacked" on top of A and be in the correct order.
+
+    A recursive merge will occur when A has commits AFTER B has been branched. The commits in B can no longer be stacked on top of A, and git needs to find the correct order for your commit history.
+
+3. What git command changes to another branch?
+    git checkout branch_name
+
+4. What git command deletes a branch?
+    git branch -d branch_name (Note, -d only works if the branch has been successfully merged. If you want to delete an unmerged branch, use -D)
+
+5. How do merge conflicts happen?
+    When both branches in a merge have made changes in the same file(s) a merge conflict occurs. There is no way for git to know what changes are supposed to be kept, so we have to manually fix any conflicts.
+
+
+/* Part 2 */
+
+No questions or text, but I messed around with merges! Caused a few conflicts, and did both a fast-forward and recursive merge! (Git technically chose ort instead of recursive, but from a search it seems that's an improved recursive strategy!)
+
+While I have used git/github before it had a GUI built into Android Studio, so I'll have to adjust to using Terminal! I also never fully grasped some of the more involved things, like big conflicts, rebasing, etc. so there's still plenty to learn!
