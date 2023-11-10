@@ -1,0 +1,12 @@
+.todo {
+	color: purple;
+	font-size: 30px;
+}
+
+.todo:hover {
+	background-color: rgba(0, 0, 0, 0.1);
+}
+
+.thumbnail {
+	width: 200px;
+}
