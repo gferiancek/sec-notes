@@ -441,8 +441,6 @@ document.body.append(firstElement, ... nthElement);
 
 As shown above, we also have direct access to the **body**, so it's quick to append Elements to the end of the body!
 
-### appendChild
-
 There is also the **appendChild** method, but it is older and doesn't support appending multiple elements. (**append** wasn't compatible with IE, but since that's gone... it's best to stick with simply **append**).
 
 #### prepend
