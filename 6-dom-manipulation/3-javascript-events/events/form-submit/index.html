@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Form Submission</title>
+  </head>
+  <body>
+    <h1>Logo Creator!</h1>
+    <p>The easy way to make hideous logos!</p>
+    <form id="logoform">
+      <p>
+        <label
+          >Enter a brand name:
+          <input type="text" name="brandName" placeholder="Brand Name" />
+        </label>
+      </p>
+      <p>
+        <label
+          >Enter a brand color:
+          <input type="color" name="color" />
+        </label>
+      </p>
+      <p>
+        <label
+          >Select a font size:
+          <input type="range" name="fontsize" min="10" max="200" />
+        </label>
+      </p>
+      <input type="submit" />
+    </form>
+    <section id="results"></section>
+    <script src="app.js"></script>
+  </body>
+</html>

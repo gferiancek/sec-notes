@@ -462,3 +462,314 @@ removeMe.remove();
 ```
 
 There is also the older **removeChild**, but it requires selecting the parent and then passing in the child. With IE gone, it's safe to stick with **remove**.
+
+# JavaScript Events
+
+DOM events are "actions" that occur as a result of actions by the user or browser. Some common events:
+
+- Clicking
+- Hovering
+- Pressing a specific key
+- When the DOM has loaded
+
+<sub>Full list at [MDN](https://developer.mozilla.org/en-US/docs/Web/Events)</sub>
+
+Events are the lifeblood of broswer based JS! We listen for events, and then react. This approach is known as **Event Driven Programming**.
+
+## Adding Events
+
+The general structure for adding events is:
+
+> When \<event-type> occurs on \<HTMLElement(s)>, do \<action>
+
+There are 3 ways of adding Events:
+
+#### Adding via HTML
+
+```
+// HTML file
+<h1 onclick="functionName()">Hello World</h1>
+
+// JS file
+function funtionName() {
+  console.log("You just clicked the h1 element!");
+}
+```
+
+This method is not ideal, as it violates **Separation of Concerns** by adding JS logic to our HTML.
+
+#### Adding via JS
+
+```
+const btn = document.querySelector('button');
+btn.onclick = functionName;
+```
+
+<sub>**Important:** Don't pass the '()' with the function as it will result in it being executed immediately! Only pass the reference.</sub>
+
+If you need to pass arguments to the function, then an annymous function will assist.
+
+```
+btn.onclick = function() {
+  functionName(arg);
+}
+```
+
+While this is an improvement over adding in HTML, we still have a better solution.
+
+#### Adding via eventListener
+
+```
+const h1 = document.querySelector('h1');
+h1.addEventListener('type', function() {
+  console.log("You just clicked the h1 element!");
+})
+```
+
+This is our preferred method for two reasons:
+
+- If we ever want to remove our event, its far easier to do with eventListeners.
+- If for some reason you needed multiple onEvents of the same type, you can only do that with eventListeners.
+
+## Event Object
+
+Every event comes with it's own object containing vital information about the event. Some important Event attributes:
+
+- target: Indicates the element that was clicked.
+- page x/y: Indicates the position of the event.
+- type: Indicates the type of event.
+- preventDefaut() - Used to prevent default event behaviour, such as a form submission refreshing the page.
+
+You can access it via:
+
+```
+btn.addEventListener('click', function(e) {
+  // do something with e
+})
+```
+
+## Event Examples
+
+#### onclick
+
+```
+btn.addEventListener('click', function() {
+  // submit form
+})
+```
+
+#### DOMContentLoaded
+
+Browsers parse HTML from top to bottom, and will run any \<script></script>s the moment they are encountered! That means if your \<script></script> is in the \<head></head> and references anything in the \<body></body> all of the HTMLElements will be **null**!
+
+One solution is to put /<script></script> tags at the end of the body, but you can also do the following:
+
+```
+document.addEventListener("DOMContentLoaded", function() {
+  console.log('DOM parsed and loaded!');
+})
+```
+
+It's worth noting that this isn't when everything in the page, such as images, are fully loaded. It's simply when the entire HTML file has been parsed and loaded. (You still have access to the elements, but the may not be rendered on screen yet.)
+
+#### window.load
+
+This can be used to wait for all content, such as images, to be fully loaded.
+
+```
+window.addEventListener('load', function() {
+  console.log("Fully Loaded!");
+})
+```
+
+#### onsubmit
+
+```
+const form = document.querySelector('form');
+form.addEventListener('submit', function() {
+  console.log('Form Submitted!');
+})
+```
+
+By default, submit will refresh your page (or if \<action></action> is supplied, it'll send you to that page.) While, this can be useful, in the above example, you'll immediately lose your console.log() due to a page refresh! Thankfully, it's easy to disable this behaviour:
+
+```
+form.addEventListener('submit', function(evt) {
+  evt.preventDefault();
+  // do stuff on this page
+})
+```
+
+### Key Events
+
+#### keypress
+
+```
+input.addEventListener('keypress', function(e) {
+  console.log(`You pressed the ${e.key} key!`)
+})
+```
+
+<sub>Note: keypress only tracks a full key sequence, aka when something would show up in an input. This means that keys like shift, alt, and caps lock don't trigger by themselves.</sub>
+
+Keypress is useful for inputs, but if you were making a game you'd want to track all keys, as something like shift could be mapped to a boost, etc. In those scenarios, you'd use the following two events.
+
+#### keydown
+
+Keydown tracks when any key is pressed down.
+
+```
+document.addEventListener('keydown', function() {
+  console.log('Keydown detected!');
+})
+```
+
+#### keyup
+
+Keyup tracks when any key is released.
+
+```
+document.addEventListener('keydown', function() {
+  console.log('Keydown detected!');
+})
+```
+
+## Handling Multiple Events
+
+A common use case for having multiple events could be having a list where each item has it's own Event.
+
+```
+// HTML
+<ul id="friend-list">
+  <li>Friend 1 <button>Unfriend</button></li>
+  <li>Friend 2 <button>Unfriend</button></li>
+  <li>Friend 3 <button>Unfriend</button></li>
+</ul>
+
+// JS
+const removeBtns = document.querySelector('li button');
+for (let btn of removeBtns) {
+  btn.addEventListener('click', function(e) {
+    e.target.parentElement.remove():
+  })
+}
+```
+
+While this gets the job done, it's not ideal. Each \<li></li> performs the exact same event, albeit on itself, and we make a new eventListener for each one. Imagine if we had 100 or even 1000 friends! It also doesn't account for the fact that new friends could be added to the list. We'd have to manually add a new eventListener every time we add a new friend!
+
+### Event Delegation
+
+With **Event Delegation** we attach a listener to the parent, in our case the \<ul></ul> and then pass the Event down to the child. This results in 1 eventListener total vs an eventListener for each \<li></li>.
+
+```
+const friendList = document.querySelector('#friend-list');
+
+friendList.addEventListener('click', function (e) {
+  if (e.target.tagName === 'BUTTON') {
+    e.target.parentElement.remove();
+  }
+});
+```
+
+# Data Attributes
+
+We can create custom **data attributes** to add metadata or additional information to Elements. This is info that the user shouldn't see but is still accessible in CSS & JS.
+
+### Creating Data Attributes
+
+Simply add an attribute to your HTML that begins with "data-" plus whatever you want to name the attribute.
+
+```
+<ul id="cars">
+  <li data-model="model 3" data-year="2014">Tesla</li>
+  ...
+</ul>
+```
+
+### Accessing Data Attributes
+
+If you're accessing a single **data attribute**, it's easy enough to use **getAttribute** and **setAttribute**.
+
+```
+li.getAttribute('data-year');
+li.setAttribute('data-year', value);
+```
+
+If you want to access all of your **data attributes**, you can use the **dataset** property, which returns a DOMStringMap.
+
+```
+// Read
+li.dataset // {model: 'model 3', year: '2014'}
+li.dataset.year // '2014'
+
+// Write
+li.dataset.year = '2020';
+li.dataset.sold = true; // This would add a new data attribute, sold, with the value of true
+```
+
+<sub>Note that when using **dataset** the "data-" prefix is removed!</sub>
+
+# localStorage & sessionStorage
+
+**localStorage** and **sessionStorage** are mechanisms for storing info in the browser for a specific domain. The main difference between the two is that **localStorage** has no expiry, while **sessionStorage** is cleared when the browsing session ends. (The window or tab is closed.)
+
+Other than that difference, they function identically and use all the same methods, etc.
+
+**localStorage** stores it's info in the browser application. That means if you go to a different computer or use a different browser, you won't have access to that data. This is also true for incognito/private mode.
+
+## Accessing localStorage
+
+All data is stored in a key-value pair, and every key has to be a String. Values are also stored as Strings, regardless of the type provided.
+
+```
+// Read
+localStorage.getItem('key'); // value
+
+// Write
+localStorage.setItem('key', value);
+
+// Remove
+localStorage.removeItem('key');
+
+// Clear (empty everything)
+localStorage.clear();
+```
+
+In the case of **getItem** and **setItem**, we can also use .notation!
+
+```
+// Read
+localStorage.key // value
+
+// Write
+localStorage.key = value
+```
+
+### Handling Primitives
+
+Since all values are stored as Strings, you need to convert back to the proper data type. This is simple enough when it comes to primitives, as shown below:
+
+```
+// Number
+const count = parseInt(localStorage.getItem('count'));
+
+// Float
+const count = parseFloat(localStorage.getItem('count'));
+```
+
+### Handling Objects
+
+If you try and insert an Object into local storage you'll get the following:
+
+```
+localStorage.setItem('key', myObj); // key: "[object Object]"
+```
+
+To work around this, we can use JSON!
+
+```
+const preferences = {fontSize: "18px", color: "purple",}
+
+localStorage.setItem('preferences', JSON.stringify(preferences));
+JSON.parse(localStorage.getItem('preferences'));
+```
