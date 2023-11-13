@@ -247,3 +247,8 @@ git push -u <alias> <branch>
 // Pull changes into local repo
 git pull <alias> <branch>
 ```
+
+```
+// Clone repo
+git clone <url>
+```
