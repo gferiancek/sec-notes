@@ -28,3 +28,13 @@ let nameInput = document.getElementById('username');
 function submitForm() {
   usernames.push(nameInput.value);
 }
+
+// Pure vs unpure
+
+function append(arr, val) {
+  arr.push(val);
+}
+
+function appendPure(arr, val) {
+  return [...arr, val];
+}
