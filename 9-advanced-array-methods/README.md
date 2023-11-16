@@ -262,3 +262,8 @@ nums.reduce(function(accumulator, currentValue, index, arr) {
 ```
 
 Note the placement of **0**! It is an optional parameter that serves as the initial value for accumulator. if specified, accumulator = initialValue and curentValue starts looping at index 0. If it isn't specified, accumulator = index 0 and currentValue starts looping at index 1.
+
+When to use `reduce`:
+
+- It works for almost anything, but is sometimes overkill. Generally, use it when you want to `reduce` something.
+- When you want to transform an array into another data structure.
