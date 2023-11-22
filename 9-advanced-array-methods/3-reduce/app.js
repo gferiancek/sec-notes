@@ -27,3 +27,9 @@ people.reduce(function (accumulator, person) {
   }
   return accumulator;
 }, {});
+
+hoistTest();
+
+function hoistTest() {
+  console.log('HOISTING!');
+}
