@@ -1024,11 +1024,13 @@ The full syntax for Comprehension is `[value_to_append for_loop optional_conditi
 Keep in mind that the names, such as `List Comprehension` don't mean your iterating over a list. It means you're **making** a list, and any sort of iterable can be used.
 
 ### Lists
+
 Say we want to take a list and **double** every value in it. Using our pseudo code syntax from above:
 `[]` is the syntax for making a new list.
 `num * 2` is the new value we want to append.
 `for num in numbers` is the loop
 And technically, we don't need a condition, since we want to affect **all** items.
+
 ```
 nums = [1, 2, 3, 4]
 doubled = [num * 2 for num in nums] // [2, 4, 6, 8]
@@ -1050,6 +1052,7 @@ comp_evens = [num for num in nums if num % 2 == 0]
 ```
 
 As noted above, your iterable can be anything! Say we were iterating over a `dict`:
+
 ```
 chickens = [
     {"name": "Henry", "sex": "Rooster"},
@@ -1074,6 +1077,7 @@ Say you want to create something like a `3x3 board` for a game.
 ```
 
 ### Complex Conditionals
+
 It's worth noting that the `optional_condition` in the normal syntax can only be an `if` statement. However, if we change the syntax a little bit, we can do branching `if else` conditions.
 `[if_value if ... else else_value for_loop]`
 
@@ -1084,7 +1088,9 @@ grades = ['PASS' if score >= 70 else 'FAIL' for score in scores]
 ```
 
 ### Functions in Comprehension
+
 Say you have a `dict` of moorse code and want to use a function to extract the proper moorse code for a given letter.
+
 ```
 def get_letter(ltr):
     morse_lookup = {
@@ -1107,6 +1113,7 @@ get_morse_code('SOS') // '... --- ...'
 ```
 
 ### Dictionary Comprehensions
+
 The syntax is very similar to lists, except we use `{}` and for the `value_to_append` we need to supply a `key: value` pair.
 
 ```
@@ -1118,6 +1125,7 @@ even_doubles = {num: num * 2 for num in range(5) if num % 2 == 0}
 ```
 
 ### Set Comprehensions
+
 Exact same syntax as `dict comps` but instead of a `key: value` we just pass in the `key`. (Basically, `value_to_append` from the list example.)
 
 ```
@@ -1127,3 +1135,579 @@ unique_letters = {char for char in 'abracadabra'}
 cons = {char for char in 'Hello darkness my old friend' if char not in 'aeiou'}
 // {' ', 'd', 'f', 'h', 'k', 'l', 'm', 'n', 'r', 's', 'y'}
 ```
+
+# Python Tools & Techniques
+
+Not similar, but the following are a collection of useful tidbits present in Python.
+
+## Packing / Unpacking
+
+Similar to JS **destructuring**, Python has (Un)Packing.
+
+### Unpacking
+
+**Unpacking** is used to extract values from **any** iterable.
+
+```
+names = ['charlie', 'lucy']
+name1, name2 = names
+// name1 = 'charlie', name2 = 'lucy'
+```
+
+You can also grab a few variables and then collect the rest using `*`. Regardless of the iterable you're unpacking, `*` will always be a `list`.
+
+```
+sorted_scores = [2400, 2350, 2100, 1960]
+top_score, *scores = sorted_scores
+// top_score = 2400
+// scores = [2350, 2100, 1960]
+```
+
+#### Nested Unpacking
+
+Given the following variable: `points = (40, 50, 20)`
+When we're unpacking, such as `x, y, z = points`, Python is doing the equivalent of `(x, y, z) = (40, 50, 20)`. We can leave off the **parens** as Python understands and will do it for us.
+
+However, this becomes an issue when things get nested, so we need to explicity add the parens.
+
+```
+color_pairs = [['red', 'green'], ['purple', 'orange']]
+
+pair1, pair2 = color_pairs
+// pair1 = ['red', 'green']
+// pair2 = ['purple', 'orange']
+
+((primary1, secondary1), (primary2, secondary2)) = color_pairs
+// primary1 = 'red', secondary1 = 'green'
+// primary2 = 'purple', secondary2 = 'orange'
+```
+
+#### Common Use-Cases
+
+The most common place to see **Unpacking** is within a for loop, specifically when looping over dictionaries. (**Unpacking** lets you access both the `key` and `value` separately.)
+
+```
+grades = {'A': 12, 'B': 19, 'C': 30}
+
+// Accessing with for loop
+for pair in grades.items():
+    print(pair)
+
+// With Unpacking
+for (k, v) in grades.items():
+    print(k, v)
+```
+
+### Packing (Spreading)
+
+#### Spreading
+
+Similar to how we used `*` in **Unpacking**, we can use it to **spread** out an iterable.
+
+```
+evens = [2, 4, 6, 8]
+[-2, 0, *evens] // [-2, 0, 2, 4, 6, 8]
+
+odds = [1, 3, 5, 7]
+[*odds, *evens] // [1, 3, 5, 7, 2, 4, 6, 8]
+```
+
+However, when it comes to `sets/dicts` there is an important distiction. Since both a `set` and `dict` use `{}`, you need to use `**` to indicate you want a `dict`.
+
+```
+rainfall = {'Jan': 2.5, 'Feb': 4.9}
+
+// Set
+{*rainfall} // {'Jan', 'Feb'}
+{*'hello'} // {'h', 'e', 'l', 'o'}
+
+// Dictionary
+{'Dec': 0.5, *rainfall} // ERROR
+{'Dec': 0.5, **rainfall}
+// {'Dec': 0.5, 'Jan': 2.5, 'Feb': 4.9}
+```
+
+It's worth noting that with `dicts` if there's a duplicate key, the **most recent** one will stick.
+
+```
+{'Jan': 1.0, **rainfall} // {'Jan': 2.5, 'Feb': 4.9}
+{**rainfall, 'Jan': 1.0} // {'Jan': 1.0, 'Feb': 4.9}
+```
+
+#### Packing Function args
+
+**Packing** also uses the `*` operator, and is most useful in function arguments.
+
+```
+nums = [2, 4, 6, 8]
+print(nums) // [2, 4, 6, 8]
+print(*nums) // 2 4 6 8 (Each printed individually)
+```
+
+```
+def multiply_sum(multiplier, *nums):
+    return multipllier * sum(nums)
+
+multiply_sum(4, 1, 2, 3, 4)
+// 40 -- 4 * sum((1, 2, 3, 4))
+```
+
+## Exception Handling
+
+Contrast to JS, Python is very **explicit** with its errors. There's no returning `NaN` or `undefined`. If something can't be done, Python will make sure you're aware by throwing an error.
+
+While neither approach is specifically wrong, Python's take means we'll have to worry about error handling more than in JS.
+
+### Catching Exceptions
+
+Say we had a function to calculate the number of days you've been alive.
+
+```
+def get_days_alive(person):
+    days = person['age'] * 365
+    print(f"You have been alive for {days} days")
+
+get_days_alive({'age': 50})
+// "You have been alive for 18250 days"
+```
+
+#### LBYL
+
+However, what if a `dict` isn't passed in? What if it doesn't have an `age` attribute? Python will throw an `Error`.
+
+We could write code to predict errors, such as:
+
+```
+if 'age' in person and 'name' in person:
+    // Do stuff.
+```
+
+This is known as **LBYL** (Look Before You Leap).
+
+#### EAFP
+
+**LBYL** inherently wrong, but it is more Pythonic to use **EAFP** (Easier to Ask for Forgiveness than Permission).
+
+**EAFP** uses Python's `try: except:` to catch and handle errors.
+
+```
+def get_days_alive(person):
+    try:
+        days = person['age'] * 365
+        print(f"{person['name']} have been alive for {days} days")
+    except KeyError as exc:
+        print(f"Missing key: {exc}")
+    except TypeError:
+        print("Expected person to be a dict")
+```
+
+Python lets you chain mutliple `except:` blocks, so you can explicitly call and handle specific exceptions instead of all of them.
+
+### Common Exceptions
+
+|     Error      |              Description               |
+| :------------: | :------------------------------------: |
+| AttributeError | Couldn't find `attr`. (object.missing) |
+|    KeyError    | Couldn't find `key` (dict["missing"])  |
+|   IndexError   |  Couldn't find `index` (list[99999])   |
+|   NameError    | Couldn't find `variable` (mispeld_var) |
+|    OSError     |       OSError (r/w to file, etc)       |
+|   ValueError   | Incorrect value (covert 'hey' to int)  |
+
+### Raising Exceptions
+
+Python makes it super simple to throw an exception with the `raise` keyword.
+
+```
+raise Exception // Exception!
+```
+
+However, you generally want to be as specific as possible. Don't ever raise just the base `Exception` class!
+
+```
+def catch_exception(dict):
+    try:
+        if 'age' not in dict:
+            raise Exception('Missing key age')
+    exception KeyError:
+        // This won't catch the above Exception!
+
+```
+
+### Exception Handling Pattern
+
+Generally, you want your logic to `raise` errors as soon as they occur and only use `try: except:` in a place where you can actually handle that error by retrying, displaying to user, etc.
+
+As an example:
+
+```
+def bounded_avg(nums):
+    """Returns avg of nums, but only accepts nums in range of 1-100"""
+
+    for n in nums:
+        if n < 1 or n > 100:
+            raise ValueError("Outside of bounds 1-100")
+
+    return sum(nums) / len(nums)
+
+def handle_data():
+    """Process data from db"""
+
+    # ages = get_ages(from_my_db)
+    ages = [10, 40, 50, 99, 103]
+
+    try:
+        avg = bounded_avg(ages)
+        print(f"Average was {avg}")
+    except ValueError as exc:
+        # exc is exception obect -- contains info on exception!
+        print("Invalid age in list of ages")
+```
+
+`bounded_avg`'s job is simply to calculate the avg of a `list`, and isn't in charge of handling an error so it simply `raise`s one.
+
+`handle_data` will take the ValueError and do something with it. You might want a different action for `bounded_avg`'s ValueError depending on where you're calling it. What if `bounded_avg` was in a library? Shouldn't the user decide what to do with the `exception`?
+
+## Docstrings & Doctests
+
+We've alredy seen **Docstrings**, but as a review, you can declare them at the top of any file/class/func/etc. with `"""`. Calling `help()` on that item will then display the docstring.
+
+```
+def bounded_avg(nums):
+    """Returns avg of list nums, but only accepts
+    nums in range of 1-100"""
+    # Note the docstring must be at the TOP!
+
+    for n in nums:
+        if n < 1 or n > 100:
+            raise ValueError("Outside of bounds 1-100")
+
+    return sum(nums) / len(nums)
+```
+
+### Writing Doctests
+
+However, Python also supports built in tests inside of your docstrings! The syntax follows the builtin Python interpreter:
+
+-   `>>>` is used to start a new test.
+-   `...` is used for multiline. Say you need to set up a variable, and then call a function, etc.
+
+```
+def bounded_avg(nums):
+    """Returns avg of list nums, but only accepts
+    nums in range of 1-100
+
+    >>> bounded_avg([2, 4, 6])
+    4.0
+    """
+
+    for n in nums:
+        if n < 1 or n > 100:
+            raise ValueError("Outside of bounds 1-100")
+
+    return sum(nums) / len(nums)
+```
+
+After your test declaration, simply write the expected value on the next line.
+
+You can also write tests that expect an exception by writing the first line of the stacktrace, `...`, which makes python ignore everything else, and then you put the expected Exception.
+
+```
+>>> bounded_avg([1, 53, 200])
+Traceback (most recent call last):
+    ...
+ValueError: Outside of bounds 1-100
+```
+
+The helpful thing about these **doctests** is that they're also displayed when calling `help()`, so the user sees some example use cases.
+
+### Running tests
+
+Once your **doctests** are written, you can run them with the command:
+`python3 -m doctest -v filename.py`
+
+This will run all doctests in the file, tell what passed/failed/etc.
+
+It's worth noting that the `dir` you run the command from is where the test runs. (If you're trying to access other files, etc. Their path must be relative to the `dir` you ran the test command, not the `dir` the file is in.)
+
+## Standard Library & Importing
+
+Very similar to working with **Android**, Python has a large standard library where you can import specific modules to add in helpful features.
+
+Check out the [docs](https://docs.python.org/3/library/index.html) for a full list. (Anything with `module_name --- ` is something that needs to be imported.)
+
+### Importing a module
+
+Lets use Python's `math` module as an example. Say you wanted to use `ceil()` on a number.
+
+```
+ceiling = math.ceil(10.7) // NameError !!
+```
+
+`math` is inaccessible to us, unless we first `import` it.
+
+```
+import math
+ceiling = math.ceil(10.7) // 11
+```
+
+### Importing module functions
+
+Maybe you don't need a whole module and just a single succulent function is calling your name? Welcome in the `from` keyword!
+
+```
+from math import ceil
+ceiling = ceil(10.7) // 11
+```
+
+Not only does this save you from adding necessary bloat to your project, but it also adds that function to your namespace. (Meaning, you can just call it directly insted of `module.function()`)
+
+#### Alias
+
+You can also rename imported module functions if you desire using the `as` keyword.
+
+```
+from math import ceil as round_up
+round_up(10.7) // 11
+```
+
+As an alternative to importanting an entire module, you could do `from module import *` which would import every function individually so they're all namespaced to your file/project/etc.
+
+### Module Examples
+
+#### random
+
+In JS, we could simply use `Math.random()`, however Python has an entire `random` module!
+
+This has a ton of useful functions for randomness.
+
+##### choice
+
+Returns a random element from an `iterable`. If empty, it returns an `IndexError`. Although, it doesn't modify the iterable, so it doesn't present unique choices.
+
+```
+choice([1, 2, 3, 4]) // random element
+```
+
+##### sample
+
+Returns a `k` length list of unique elements, which addresses the concern raise in `choice`.
+
+```
+sample([1, 2, 3, 4], k=2) // returns 2 random elements
+```
+
+It also has an optional arg, `counts` which can multiply the number of choices presented.
+
+```
+sample([1, 2, 3], counts=[3, 2, 4])
+// sample pool is [1, 1, 1, 2, 2, 3, 3, 3, 3]
+```
+
+##### randint
+
+Returns a random `int` from the specified range. It is **inclusive** on both sides.
+
+```
+randint(1, 100) // num from 1 - 100
+```
+
+#### Calendar
+
+Calendar gives us access to the `Calendar` class. For easier notes, we'll use the `TextCalendar` class that is also provided.
+
+```
+import calendar
+
+cal = calendar.TextCalendar()
+cal.prmonth(2025, 4)
+//      April 2025
+// Mo Tu We Th Fr Sa Su
+//     1  2  3  4  5  6
+//  7  8  9 10 11 12 13
+// 14 15 16 17 18 19 20
+// 21 22 23 24 25 26 27
+// 28 29 30
+```
+
+### Sharing code between files
+
+Thankfully, this is exactly the same as imporing `modules` from the standard library! (This is contrary to JS where you need to `export` files first.)
+
+```
+// helpers.py
+from random import randint, choice
+
+def get_rand_year():
+    ...
+
+def get_rand_month():
+    ...
+
+// people.py
+from helpers import get_rand_year, get_rand_month
+
+def make_person(name, fav_color):
+    return {
+        'name': name,
+        'fav_color': fav_color,
+        'birth_year': get_rand_year(),
+        'birth_month': get_rand_month()
+    }
+```
+
+## Third Party Libraries
+
+While Python's **standard library** offers plenty of extras, it doesn't offer everything. That's where 3rd party libraries come in! (Hint: We've already used one, `ipython3`)
+
+We've already covered installation with `pip3`, but we'll go into more detail here.
+
+### pip
+
+Besides `pip3 install` and `pip3 uninstall`, there's another useful pip command, `pip3 list` which will tell you what you've currently installed.
+
+We'll use `forex-python` as an example here, so go ahead and install it with `pip3 install forex-python`
+
+### Using Libraries.
+
+Simply downloading a 3rd party library isn't enough. You need to `import` it~
+
+```
+from forex_python.bitcoin import BtcConverter
+
+b = BtcConverter()
+
+b.get_latest_price('USD') // 44116.9026
+b.get_latest_price('JPY') // 5968119.1303
+```
+
+## venv
+
+Packages installed by `pip3` are installed **globally**. This sounds nice, but new versions of packages can often break functionality.
+
+Thankfully, **Virtual Environments** (venv) let us section off these packages/libraries to specific directories.
+
+### Creating a venv
+
+```
+cd my-project-directory
+python3 -m venv venv
+```
+
+<sub>Note: `-m venv` refers to loading the module `venv`. The second `venv` is the file name for the **Virtual Environment**, which is usually named venv.</sub>
+
+### Using a venv
+
+Once its created, we need to make sure we actually use it!
+
+```
+source venv/bin/activate
+// Shell should update to start with (venv)
+```
+
+To leave the `venv`, you can simply type `deactivate`.
+
+You only need to create the `venv` once, but you need to use the `source` command to activate it **every time you open your terminal**.
+
+There are a few things to note about using a `venv`:
+
+-   The `venv` uses whichever version of Python was used to create it.
+    -   Normally, you need to type `python3` instead of `python` in order to access `python3` commands. Since the `venv` was made with `python3` though, `python` refers to `python3`.
+-   In your `venv` you have access to Python's standar library.
+-   You **don't** have access to globally installed `pip3` packages.
+
+### Handling Dependencies
+
+Our `venv` folders tend to get quite large, so we often don't want to share them.
+
+We can easily exclude it by adding it to a `.gitignore` file.
+
+```
+// Top level of git repo
+echo 'venv/' > .gitignore
+```
+
+Since we aren't sharing the `venv`, we need a way for people to replicate it on their machines.
+
+#### Declaring Requirements
+
+We use a `requirements.txt` file in order to list our exact packages/versions, so that anyone can easily run our project in the exact same environment.
+
+You can use the `pip freeze` command to see all your package versions, and `pip freeze > requirements.txt` will output it to a .txt file.
+
+<blockquote><b>Make sure you update your `requirements.txt` every time you install a new package!</b></blockquote>
+
+#### Installing Requirements
+
+Let's run through setting up a project on your machine. Colt uses the following repo, so let's clone it:
+```
+git@github.com:christarazi/ucl_draw.git
+```
+
+Afterwards, cd into the dir and create and activate a new `venv`.
+
+```
+python3 -m venv venv
+source venv/bin/activate
+```
+Finally, we can use `pip` to install all of the requirements.
+```
+pip install -r requirements.txt
+```
+<blockquote><b>Note: Since we're using Python 3.10, the provided requirements.txt in the course will not work! As suggessted in Slack, try removing all of the `==x.x` and only keep the package names to get the most recent update. This should more or less work without issues.</b></blockquote>
+
+## Files
+We probably won't read/write to files much with web development often, but it's still nice to touch on the subject.
+
+### Reading a File
+First, we need to open up our file.
+```
+file = open(haiku.txt, 'r')
+```
+Since we're **reading** we passed in 'r' to `open`.
+
+Once the file is open, we can easily loop through it.
+```
+for line in file:
+    print(f"Line is... {line}")
+```
+We can also read the entire file in one go!
+
+```
+all_text = file.read()
+```
+<blockquote><b>Note, files in Python are kind of like a VCRTape. If we ran the all_text code after our for loop, the result would be empty! We need to 'rewind' the file!</b></blockquote>
+
+```
+file.seek(0) // beginning of file.
+```
+Most importantly, make sure you `close` the file!
+```
+file.close()
+```
+
+### Writing to a File
+Like reading, we need to open our files first!
+```
+file = open('write-me.txt, 'w')
+```
+This time though, we passed in 'w' for `write`. Now we can write to the file!
+```
+file.write('Hello World!')
+```
+The only issue here.. is that we replaced everything that was originally in the file! You can use `file.append()` to add to the end of the file.
+
+Also, if you open/write to a file that **doesn't** exist, Python will create it for you!
+
+### with
+Python has a handy `with block` which can help manage our files for us!
+```
+with open('haiku.txt', 'r') as file:
+    for line in file:
+        print(f'Line is... {line})
+    
+    # Inside with block, so file still exists.
+
+# Outside with block, Python will automatically close out the file for us!
+```
+`with` can be used by many other things. Google `python context managers` for more info.
