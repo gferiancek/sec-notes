@@ -1711,3 +1711,164 @@ with open('haiku.txt', 'r') as file:
 # Outside with block, Python will automatically close out the file for us!
 ```
 `with` can be used by many other things. Google `python context managers` for more info.
+
+# Python OOP
+`class`: Blueprints for new objects, definets arrs / method
+`method`: Func defined on class, can see/change attr on instance.
+`class method`: Func defined on class, called on class and not instance.
+
+## Python vs JS Syntax differences
+JavaScript:
+```
+// get/set attr
+obj.name
+obj.['name']
+
+// call methods
+obj.method()
+obj['method']()
+```
+
+Python:
+```
+// get/set attr
+obj.name
+
+// call method
+obj.method()
+```
+The main difference here is that Python can't use `[]` syntax. Since Python uses that for `dict`s, it's not allowed on `classes` to avoid confusion. (Remember, JS doesn't have `dict`s and just has `objects`.)
+
+## Classes
+We can declare classes with the `class` keyword.
+```
+class Triangle:
+    """Right Triangle"""
+    ...
+```
+### __init__
+Similar to JS's `constructor` function, Python uses something called `__init__` that takes in `self`, which works similar to JS' `this`, as well as any other paremeters you want to pass in.
+```
+def __init__(self, a, b):
+    self.a = a
+    self.b = b
+```
+Contrary to JS, Python doesn't automaticaaly make `self` available, hence why we needed to pass it in to our `__init__` function. However, we need to do the same for any `method` that needs to access the class' attributes.
+```
+def get_hypotenuse(self):
+    return((self.a ** 2) + (self.b ** 2))
+```
+
+### Class Methods
+**Class methods** are special methods that operate on the class itself. We can declare them with the decorator `@classmethod`. Instead of getting the instance (`self`), this method will get the actual class. (Since `class` is a Python keyword, we typically call it `cls`).
+```
+@classmethod
+    def random(cls):
+        return cls(randint(1, 20), randint(1, 20))
+
+t = Triangle.random() // Triangle instance with random a / b.
+```
+
+**Class methods** are often used as a Factory, to create new class instances. Python's builtin `date` class is a good example. We could manually create a date object ourselves, but we can also use built-in methods such as:
+```
+date.today() // Creates a date object for today.
+date.fromtimestamp() // Creates date object from POSIX timestamp
+date.fromisoformat() // Creates date object for 'YYYY-MM-DD' str
+```
+
+### Inheritance
+Just like JS, we can have a class inherit from other classes. (It's actually closer to Android, since a single `class` can inherit from multiple classes.)
+
+To inherit, you simple pass the **parent class** into the class you're defining.
+```
+from triangle import Triangle
+
+class ColoredTriangle(Triangle):
+    """Triangle that has color"""
+```
+#### super()
+There is one clear difference from JS to touch on though, and that involves the `super` keyword.
+```
+// JS
+super // refers to parent
+super(...) // calls parent constructor
+
+// Python
+super() // refers to parent
+super().__init__(...) calls parent initializer.
+```
+
+Going back to our ColoredTriangle example, our `__init__()` function would look like this:
+```
+def __init__(self, a, b, color):
+        super().__init__(a, b)
+        self.color = color
+```
+
+#### Overwriting
+If you simply want to replace a **parent**'s functionality, you can redeclare the method with your new logic.
+```
+// triangle.py
+def describe(self):
+        return (
+            f"I am a triangle with sides: {self.a}, {self.b}, & {self.get_hypotenuse()}."
+        )
+
+// colored_triangle.py
+def describe(self):
+        return (
+            f"I am a {self.color} triangle with sides: {self.a}, {self.b}, & {self.get_hypotenuse()}"
+        )
+```
+
+However, this typically leads to code duplication, especially if you are just adding onto what already exists.
+```
+// colored_triangle.py
+def describe(self):
+        return f"{super().describe()} I am {self.color}"
+```
+
+### Docstrings
+It's Python standard to have a Python describing the `class`, as well as on all of its methods. For more complex classes, it's good practice to describe all of the attributes in the `class` docstring.
+
+## dunder methods
+We've already seen `__init__`, which is an example. These aren't methods that we call ourselves, but Python uses them behind the scenes and overwritting them can help us customize how our custom class behaves.
+
+### __repr__ & __str__
+`__repr__` is used to **represent** our class instance, aka a str description that's often printed to terminal. It should contain everything needed to reconstruct your object. (i.e. you should be able to paste its output into Terminal and create that exact object.)
+```
+def __repr__(self):
+    return f"Triangle(a={self.a} b={self.b})"
+// Default is <__main__.Triangle at memory_address> which isn't very useful!
+// New output is Triangle(a=3, b=4)
+```
+
+`__str__` is very similar to `__repr__` in that it is a `str` representation of our Class; however, this one is meant to be a human readable `str`.
+```
+def __str__(self):
+        return f"I am a triangle with sides: {self.a}, {self.b}, & {self.get_hypotenuse}"
+```
+
+`__repr__` is called when you type your variable/class instance into terminal and `__str__` is used when calling `str(class)` and `print(class)`.
+
+### Equality
+There are multiple Equality Methods:
+- `__lt__` - <
+- `__le__` - <=
+- `__eq__` - ==
+- `__ne__` - !=
+- `__gt__` - >
+- `__ge__` - >=
+
+As an example:
+```
+def __eq__(self, other):
+        return self.a == other.a and self.b == other.b
+
+t1 = Triangle(3, 4)
+t2 = Triangle(3, 4)
+t3 = Triangle(9, 12)
+
+t1 == t2 // True
+t1 == t2 // False
+```
