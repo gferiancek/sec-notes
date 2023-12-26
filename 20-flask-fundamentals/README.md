@@ -286,3 +286,166 @@ def show_comemnts(subreddit, post_id):
 `URL Parameters` should be things that are more like the 'subject' of the page, like `/user/<username>`. `username` refers to the profile page for a specific user.
 
 `Query Parameters` should be things that are modifiers or provide extra information about the page in question, like `/search?sort=top`. `search` is the main page but `sort` defines how the information should be organized within that page.
+
+## Jinja
+**Jinja** is used to make `HTML` templates, which will replace our hardcoded `str`s we've used so far in our `view` functions.
+
+Some advantages of templates:
+- Produce `HTML`
+- Allows dynamic responses
+    - Can use variables passed from views
+    - For loops, if/else statements
+- Inherit from other templates to minimize repetition
+
+### Flask Debug Toolbar
+Before deep diving into `Jinja`, we're taking a small detour.
+```
+pip3 install flask-debugtoolbar
+```
+
+And to include it:
+```
+from flask_debugtoolbar import DebugToolbarExtension
+
+app = Flask(__name__)
+app.config['SECRET_KEY'] = "chickensarecool"
+debug = DebugToolbarExtension(app)
+```
+For now, our 'secret key' isn't very secret, but we'll touch on that more later.
+
+Refresh the page, and you'll see an awesome toolbar with a ton of info! (Note, this is only available when using `templates`)
+
+### Templates
+Flask is looking for a specific directory named `templates`.
+```
+project-directory/
+    venv/
+    app.py
+    templates/
+        template.html
+        ...
+```
+#### Rendering templates
+Once we have our template, we can easily show it by importing Flask's `render_template`.
+```
+from flask import render_template
+
+@app.route('/')
+def index():
+    return render_template('hello.html')
+```
+
+### Dynamic Templates
+#### Variables
+With Jinja, we can use `{{ variable }}` to set dynamic content within our `HTML` templates!
+```
+<h1>This is page {{ 1 + 1}}</h1> // This is page 2
+```
+We'll create a new endpoint, '/lucky' to display this number. To provide the variable, we simply pass it to `render_template` after the template file.
+```
+// app.py
+@app.route('/lucky')
+def show_lucky_num():
+    """Example of a simple dynamic template"""
+    num = randint(1, 20)
+
+    return render_template('lucky.html', lucky_num = num, msg = "You are so lucky!")
+
+// lucky.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lucky Number</title>
+</head>
+<body>
+    <h1>Your lucky number is: {{ lucky_num }}</h1>
+    <p>{{ msg }}</p>
+</body>
+</html>
+```
+<blockquote>Make sure the variable name is the same in your render_template call AND your html template.</blockquote>
+
+#### Conditional Logic
+Jinja has a seperate syntax for conditions that involves wrapping your statements in `{% %}`
+```
+// lucky.html
+{% if lucky_num == 3 %}
+<h2>That's my lucky number too!</h2>
+{% else %}
+<h2>{{lucky_num}} is not my lucky number</h2>
+{% endif %}
+```
+The `else` block is optional, but you must include the `endif` block!
+
+#### Looping
+Loops use the same `{% %}` syntax, with just a few changes:
+```
+{% for char in word %}
+<h1>{{char}}.</h1>
+{% endfor %}
+```
+
+#### Template Inheritance
+In most cases, a lot of your pages are going to have the same content. (i.e. footer, nav bar, etc.)
+
+We'll start out by making a `base.html` file, which will house all of the boilerplate. (links, scripts, stylesheets, `<!DOCTYPE html>`, etc)
+
+For everything that we want to by dynamic/inherited, we'll wrap it in `{% block %} {% endblock %}` tags.
+```
+// base.html
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>{% block title $}{% endblock $}</title>
+    </head>
+    <body>
+        <nav>
+            <a href="">Pretend I am a navbar!</a>
+        </nav>
+        {% block content %} {% endblock %}
+        <footer>Pretend I am a footer!</footer>
+    </body>
+</html>
+
+```
+
+Now that we can sub out our `content` block, how do we actually do that in child templates? We'll actually be stripping out most of the `html`, and only writing what's unique to that template!
+```
+// greet_2.html
+{% extends 'base.html' %}
+
+{% block title %}Greeter{% endblock %}
+
+{% block content %}
+    <h1>Hi there, {{username}}!</h1>
+    {% if wants_compliments %}
+    <h2>Ok, here are compliments:</h2>
+    <ul>
+        {% for compliment in compliments %}
+        <li>{{compliment}}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+{% endblock %}
+```
+Here, we've included the `base.html` template, and definied what should go inside of the `title` and `content` blocks.
+
+### Static Resources
+**Static Resources** are things like Stylesheets, JS files, etc. (These aren't being dynamically generated. They generally stay the same.)
+
+When working with Flask we put out these files in the `/static` folder. (We link them directly, so the name can be different, but `/static` is fairly common.)
+```
+project-directory/
+    venv/
+    app.py
+    templates/
+        hello.html
+    static/
+        my-css.css
+        my-script.js
+```
+Then, depending on the usecase, you can link these in your `base.html` template, or use it only in specific templates.
