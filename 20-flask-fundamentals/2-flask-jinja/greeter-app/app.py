@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, redirect
 from flask_debugtoolbar import DebugToolbarExtension
 from random import randint, choice, sample
 
@@ -13,6 +13,12 @@ def index():
 
     return render_template("home.html")
 
+
+@app.route('/old-home-page')
+def redirect_to_home():
+    """Redirect to new homepage"""
+    
+    return redirect("/")
 
 @app.route("/lucky")
 def show_lucky_num():

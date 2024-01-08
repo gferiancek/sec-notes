@@ -1,0 +1,13 @@
+.messages p {
+    padding: 1rem;
+    border-radius: 1rem;
+    font-size: 1.5rem;
+}
+
+.messages .success {
+    background-color: rgba(0, 255, 0, 0.1);
+}
+
+.messages .error {
+    background-color: rgba(255, 0, 0, 0.1);
+}
